@@ -18,7 +18,7 @@ ONLY_LANDSCAPE_MODE=1
 DIR="/tmp"
 
 # specify feed source type; available options: user, search, popular, upcoming, fresh, editors
-SRC_TYPE="user"
+SRC_TYPE="search"
 
 # needles
 NEEDLE_TAG="<img"
@@ -71,7 +71,7 @@ fi
 RANDOMIZER=$(date +%s)
 
 # getting feed from 500px
-curl -s "$FEED"|grep "$NEEDLE_TAG"|awk -F$NEEDLE_SRC_ATTR'=\"' '{print $2}'|awk -F'"' '{print $1}' > $DIR/500px_list.txt
+curl -s "$FEED"|grep "$NEEDLE_TAG"|awk -F$NEEDLE_SRC_ATTR'=\"' '{print $2}'|awk -F'"' '{print $1}'|sed 's/\&amp;/\&/' > $DIR/500px_list.txt
 
 # getting elements count
 COUNT=`cat $DIR/500px_list.txt|wc -l|awk '{print $1}'`
