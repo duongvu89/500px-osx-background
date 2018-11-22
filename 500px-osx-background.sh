@@ -17,8 +17,12 @@ ONLY_LANDSCAPE_MODE=1
 # script directory (without final '/' slash)
 DIR="/tmp"
 
+# randomize string
+RANDOMIZER=$(date +%s)
+
 # specify feed source type; available options: user, search, popular, upcoming, fresh, editors
-SRC_TYPE="search"
+TYPE_LIST=("search" "popular" "fresh" "editors")
+SRC_TYPE=${TYPE_LIST[RANDOMIZER % ${#TYPE_LIST[@]}]}
 
 # needles
 NEEDLE_TAG="<img"
@@ -29,16 +33,16 @@ NEEDLE_SRC_ATTR="src"
 
 # images of a specific user
 if [ "$SRC_TYPE" == "user" ]; then
-	USER="auino"
+	USER="duongvu89"
 	FEED="https://500px.com/$USER/rss"
 fi
 
 # images from a search
 if [ "$SRC_TYPE" == "search" ]; then
-	SEARCH_QUERY="cat"
-	CATEGORIES="Animals"
-	SORT="newest"
-	FEED="https://500px.com/search.rss?q=${SEARCH_QUERY}&type=photos&categories=${CATEGORIES}&sort=${SORT}"
+	SEARCH_QUERY="beautiful"
+	SORT_TYPE_LIST=("newest" "pulse")
+	SORT=${SORT_TYPE_LIST[RANDOMIZER % ${#SORT_TYPE_LIST[@]}]}
+	FEED="https://500px.com/search.rss?q=${SEARCH_QUERY}&type=photos&sort=${SORT}"
 	NEEDLE_TAG="<media:content"
 	NEEDLE_SRC_ATTR="url"
 fi
@@ -67,9 +71,6 @@ fi
 #  CONFIGURATION END
 # --- --- --- --- ---
 
-# randomize string
-RANDOMIZER=$(date +%s)
-
 # getting feed from 500px
 curl -s "$FEED"|grep "$NEEDLE_TAG"|awk -F$NEEDLE_SRC_ATTR'=\"' '{print $2}'|awk -F'"' '{print $1}'|sed 's/\&amp;/\&/' > $DIR/500px_list.txt
 
@@ -77,7 +78,7 @@ curl -s "$FEED"|grep "$NEEDLE_TAG"|awk -F$NEEDLE_SRC_ATTR'=\"' '{print $2}'|awk 
 COUNT=`cat $DIR/500px_list.txt|wc -l|awk '{print $1}'`
 
 # cycling until a "good" image if found
-FOUND=0
+FOUND=1
 for i in $(seq 1 $COUNT); do
 	# printing basic information
 	echo "Getting image"
@@ -100,10 +101,10 @@ for i in $(seq 1 $COUNT); do
 	echo "Image size is ${IMG_W} x ${IMG_H}"
 
 	# checking if image is "good"
-	if [ ! $ONLY_LANDSCAPE_MODE ] || [ $IMG_W -gt $IMG_H ]; then
-		FOUND=1
-		break
-	fi
+	#if [ ! $ONLY_LANDSCAPE_MODE ] || [ $IMG_W -gt $IMG_H ]; then
+	#	FOUND=1
+	#	break
+	#fi
 done
 
 if [ $FOUND ]; then
