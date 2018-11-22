@@ -29,7 +29,7 @@ This script allows you to dynamically change your macOS background, taking image
  5. Now you have to append the following line (press `i` button to insert data):
 
     ```
-    00 12 * * * sh /directory_path/500px-osx-background.sh
+    * * * * * sh /Users/duongvu/projects/500px-osx-background/500px-osx-background.sh
     ```
 
     where `/directory_path/` identifies the path of the directory containing the script (to be configured as value of the `$DIR` directory on the script), while `00 12` specifies the program has to be called every day at noon.

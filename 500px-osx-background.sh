@@ -12,14 +12,15 @@
 # --- --- --- --- ---
 
 # set to 0 if you want to use (also) portrait photos as background
-ONLY_LANDSCAPE_MODE=1
+ONLY_LANDSCAPE_MODE=0
 
 # script directory (without final '/' slash)
 DIR="/tmp"
 
 # specify feed source type; available options: user, search, popular, upcoming, fresh, editors
-SRC_TYPE="search"
-
+TYPE_LIST=("search" "popular" "fresh" "editors")
+SRC_TYPE=${TYPE_LIST[$RANDOM % ${#TYPE_LIST[@]}]}
+echo "SRC_TYPE=${SRC_TYPE}" >> $DIR/500px.log
 # needles
 NEEDLE_TAG="<img"
 NEEDLE_SRC_ATTR="src"
@@ -29,16 +30,17 @@ NEEDLE_SRC_ATTR="src"
 
 # images of a specific user
 if [ "$SRC_TYPE" == "user" ]; then
-	USER="auino"
+	USER="duongvu89"
 	FEED="https://500px.com/$USER/rss"
 fi
 
 # images from a search
 if [ "$SRC_TYPE" == "search" ]; then
-	SEARCH_QUERY="cat"
-	CATEGORIES="Animals"
-	SORT="newest"
-	FEED="https://500px.com/search.rss?q=${SEARCH_QUERY}&type=photos&categories=${CATEGORIES}&sort=${SORT}"
+	SEARCH_QUERY="beautiful"
+	SORT_TYPE_LIST=("newest" "pulse")
+	SORT=${SORT_TYPE_LIST[$RANDOM % ${#SORT_TYPE_LIST[@]}]}
+	echo "SORT=${SORT}" >> $DIR/500px.log
+	FEED="https://500px.com/search.rss?q=${SEARCH_QUERY}&type=photos&sort=${SORT}"
 	NEEDLE_TAG="<media:content"
 	NEEDLE_SRC_ATTR="url"
 fi
@@ -100,10 +102,10 @@ for i in $(seq 1 $COUNT); do
 	echo "Image size is ${IMG_W} x ${IMG_H}"
 
 	# checking if image is "good"
-	if [ ! $ONLY_LANDSCAPE_MODE ] || [ $IMG_W -gt $IMG_H ]; then
-		FOUND=1
-		break
-	fi
+	#if [ ! $ONLY_LANDSCAPE_MODE ] || [ $IMG_W -gt $IMG_H ]; then
+	#	FOUND=1
+	#	break
+	#fi
 done
 
 if [ $FOUND ]; then
